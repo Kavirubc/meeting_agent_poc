@@ -1,3 +1,4 @@
-2025-06-07 14:08:08,848 - ERROR - Could not initialize AgentOps client - API Key is missing.
-	    Find your API key at https://app.agentops.ai/settings/projects
-2025-06-07 14:08:09,141 - WARNING -  WARNING: agentops is out of date. Please update with the command: 'pip install --upgrade agentops'
+2025-06-07 15:10:34,339 - INFO - Session Replay for default trace: https://app.agentops.ai/sessions?trace_id=4775b3f2448b6a79555e32f28d5636c7
+2025-06-07 15:10:34,353 - INFO - Session Replay for session trace: https://app.agentops.ai/sessions?trace_id=4775b3f2448b6a79555e32f28d5636c7
+2025-06-07 15:14:22,410 - INFO - Session Replay for default.session trace: https://app.agentops.ai/sessions?trace_id=4775b3f2448b6a79555e32f28d5636c7
+2025-06-07 15:14:23,974 - INFO - Session Replay for session.session trace: https://app.agentops.ai/sessions?trace_id=4775b3f2448b6a79555e32f28d5636c7

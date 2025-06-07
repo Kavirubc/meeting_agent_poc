@@ -5,9 +5,20 @@ from typing import List
 import os
 from dotenv import load_dotenv
 from .tools import AudioTranscriptionTool, SpeechAnalyticsTool, VideoFacialAnalysisTool, BodyLanguageAnalysisTool
+from .agentops_config import (
+    initialize_agentops, 
+    start_session, 
+    end_session, 
+    track_crew_execution, 
+    track_crew_completion,
+    get_session_url
+)
 
 # Load environment variables from .env file
 load_dotenv()
+
+# Initialize AgentOps
+initialize_agentops()
 
 # If you want to run a snippet of code before or after the crew starts,
 # you can use the @before_kickoff and @after_kickoff decorators
@@ -282,7 +293,21 @@ class MeetingAgentPoc():
     def process_real_time_chunk(self, chunk_file_path: str):
         """Process 15-second chunk for real-time feedback"""
         inputs = {"chunk_file_path": chunk_file_path}
-        return self.real_time_analysis_crew().kickoff(inputs=inputs)
+        
+        # Track crew execution start
+        track_crew_execution("real-time", inputs)
+        
+        try:
+            result = self.real_time_analysis_crew().kickoff(inputs=inputs)
+            
+            # Track successful completion
+            track_crew_completion("real-time", True, {"result": str(result)})
+            
+            return result
+        except Exception as e:
+            # Track failed execution
+            track_crew_completion("real-time", False, error=str(e))
+            raise e
 
     def process_full_meeting(self, meeting_video_path: str, meeting_id: str):
         """Process complete meeting for comprehensive analysis"""
@@ -290,9 +315,37 @@ class MeetingAgentPoc():
             "meeting_video_path": meeting_video_path,
             "meeting_id": meeting_id
         }
-        return self.post_meeting_analysis_crew().kickoff(inputs=inputs)
+        
+        # Track crew execution start
+        track_crew_execution("post-meeting", inputs)
+        
+        try:
+            result = self.post_meeting_analysis_crew().kickoff(inputs=inputs)
+            
+            # Track successful completion
+            track_crew_completion("post-meeting", True, {"result": str(result)})
+            
+            return result
+        except Exception as e:
+            # Track failed execution
+            track_crew_completion("post-meeting", False, error=str(e))
+            raise e
 
     def generate_coaching_insights(self, user_id: str):
         """Generate long-term coaching insights"""
         inputs = {"user_id": user_id}
-        return self.meeting_insights_crew().kickoff(inputs=inputs)
+        
+        # Track crew execution start
+        track_crew_execution("insights", inputs)
+        
+        try:
+            result = self.meeting_insights_crew().kickoff(inputs=inputs)
+            
+            # Track successful completion
+            track_crew_completion("insights", True, {"result": str(result)})
+            
+            return result
+        except Exception as e:
+            # Track failed execution
+            track_crew_completion("insights", False, error=str(e))
+            raise e

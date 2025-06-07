@@ -115,7 +115,14 @@ communication_patterns_analysis_task:
     Analyze the complete meeting transcription to identify communication patterns 
     and behavioral dynamics.
 
-    Analysis requirements:
+    CRITICAL INSTRUCTION: Only analyze the actual transcription content provided. 
+    If the transcription is incomplete, partial, or contains errors, you MUST:
+    1. Report the limitation in your analysis
+    2. Only analyze what is actually present in the transcription
+    3. Do NOT create fictional speakers, dialogue, or data
+    4. If insufficient data exists, state "insufficient_data" in relevant fields
+
+    Analysis requirements (only if sufficient transcription data exists):
     1. Calculate speaking time and turn distribution for each participant
     2. Identify interruption patterns and their impact
     3. Analyze question-asking patterns and response behaviors
@@ -127,6 +134,10 @@ communication_patterns_analysis_task:
   expected_output: >
     A detailed JSON analysis report containing:
     {
+      "transcription_quality": {
+        "status": "complete/partial/insufficient",
+        "limitations": "string describing any limitations"
+      },
       "participation_metrics": {
         "speaker_time_distribution": {},
         "turn_taking_frequency": {},
@@ -152,7 +163,14 @@ sentiment_engagement_analysis_task:
   description: >
     Conduct comprehensive sentiment and engagement analysis of the meeting content.
 
-    Analysis scope:
+    CRITICAL INSTRUCTION: Only analyze the actual transcription and video data provided. 
+    If the data is incomplete, partial, or contains errors, you MUST:
+    1. Report the data quality limitations in your analysis
+    2. Only analyze what is actually present in the source data
+    3. Do NOT create fictional participants, emotions, or sentiment data
+    4. If insufficient data exists, state "insufficient_data" in relevant fields
+
+    Analysis scope (only if sufficient source data exists):
     1. Overall meeting sentiment progression
     2. Individual participant sentiment patterns
     3. Emotional peaks and valleys during discussions
@@ -160,10 +178,14 @@ sentiment_engagement_analysis_task:
     5. Correlation between sentiment and participation
     6. Impact of sentiment on decision-making moments
 
-    Identify emotional dynamics that influenced meeting outcomes.
+    Identify emotional dynamics that influenced meeting outcomes based on actual data only.
   expected_output: >
     A comprehensive sentiment analysis report in JSON format:
     {
+      "data_quality": {
+        "status": "complete/partial/insufficient",
+        "limitations": "string describing any data limitations"
+      },
       "overall_sentiment": {
         "meeting_sentiment_score": float,
         "sentiment_progression": [],

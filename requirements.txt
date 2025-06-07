@@ -1,6 +1,9 @@
 # Core CrewAI dependencies
 crewai==0.126.0
 
+# AgentOps for monitoring and observability
+agentops>=0.3.0
+
 # Environment Variables
 python-dotenv==1.0.1
 
