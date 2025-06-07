@@ -1,0 +1,45 @@
+# Core CrewAI dependencies
+crewai==0.126.0
+
+# AgentOps for monitoring and observability
+agentops>=0.3.0
+
+# Environment Variables
+python-dotenv==1.0.1
+
+# Computer Vision and Image Processing - Using already installed versions
+opencv-python==4.11.0.86
+mediapipe==0.10.21
+pillow==10.4.0
+
+# Audio Processing and Speech Analysis - Using already installed versions
+librosa==0.11.0
+pydub==0.25.1
+speechrecognition==3.14.3
+openai-whisper
+
+# Machine Learning and AI - Using already installed versions
+transformers==4.52.4
+torch==2.5.1
+numpy==1.26.4
+scipy==1.13.1
+scikit-learn==1.5.1
+
+# Natural Language Processing - Using already installed versions
+textblob==0.19.0
+nltk==3.9.1
+
+# Data Analysis and Visualization - Using already installed versions
+pandas==2.2.3
+matplotlib==3.9.2
+seaborn==0.13.2
+
+# Utilities - Using already installed versions
+python-dotenv==1.0.1
+
+# API clients
+openai>=1.66.0
+azure-cognitiveservices-speech
+google-cloud-speech
+google-cloud-storage
+google-generativeai>=0.8.0
