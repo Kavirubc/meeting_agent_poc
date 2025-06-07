@@ -5,7 +5,24 @@ description = "meeting-agent-poc using crewAI"
 authors = [{ name = "Your Name", email = "you@example.com" }]
 requires-python = ">=3.10,<3.14"
 dependencies = [
-    "crewai[tools]>=0.126.0,<1.0.0"
+    "crewai[tools]>=0.126.0,<1.0.0",
+    "opencv-python>=4.8.0",
+    "mediapipe>=0.10.0",
+    "numpy>=1.24.0",
+    "scipy>=1.10.0",
+    "librosa>=0.10.0",
+    "transformers>=4.30.0",
+    "torch>=2.0.0",
+    "pillow>=10.0.0",
+    "pandas>=2.0.0",
+    "matplotlib>=3.7.0",
+    "seaborn>=0.12.0",
+    "scikit-learn>=1.3.0",
+    "textblob>=0.17.0",
+    "nltk>=3.8.0",
+    "pydub>=0.25.0",
+    "speechrecognition>=3.10.0",
+    "whisper>=1.0.0"
 ]
 
 [project.scripts]
@@ -14,6 +31,10 @@ run_crew = "meeting_agent_poc.main:run"
 train = "meeting_agent_poc.main:train"
 replay = "meeting_agent_poc.main:replay"
 test = "meeting_agent_poc.main:test"
+meeting_coach = "meeting_agent_poc.main:main"
+real_time_analysis = "meeting_agent_poc.main:run_real_time_analysis"
+post_meeting_analysis = "meeting_agent_poc.main:run_post_meeting_analysis"
+coaching_insights = "meeting_agent_poc.main:run_coaching_insights"
 
 [build-system]
 requires = ["hatchling"]

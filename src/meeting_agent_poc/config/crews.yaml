@@ -1,0 +1,94 @@
+# CrewAI Configuration for AI Meeting Coach System
+# This file defines the three specialized crews and their configurations
+
+real_time_analysis_crew:
+  agents:
+    - real_time_audio_analyst
+    - real_time_video_analyst
+    - real_time_feedback_synthesizer
+  tasks:
+    - real_time_audio_analysis_task
+    - real_time_video_analysis_task
+    - synthesize_real_time_feedback_task
+  process: sequential
+  verbose: true
+  memory: true
+  planning: false # Disabled for speed in real-time processing
+  description: >
+    Processes 15-second audio/video chunks to provide immediate feedback
+    nudges during live meetings. Optimized for speed and actionable insights.
+
+post_meeting_analysis_crew:
+  agents:
+    - meeting_transcription_specialist
+    - communication_pattern_analyst
+    - sentiment_engagement_analyst
+    - body_language_expert
+    - meeting_report_generator
+  tasks:
+    - comprehensive_transcription_task
+    - communication_patterns_analysis_task
+    - sentiment_engagement_analysis_task
+    - body_language_comprehensive_analysis_task
+    - generate_comprehensive_meeting_report_task
+  process: sequential
+  verbose: true
+  memory: true
+  planning: true
+  description: >
+    Analyzes complete meeting recordings to generate comprehensive reports
+    with detailed insights on communication patterns, sentiment, and body language.
+
+meeting_insights_crew:
+  agents:
+    - historical_data_analyst
+    - coaching_recommendation_specialist
+    - progress_tracking_specialist
+  tasks:
+    - historical_pattern_analysis_task
+    - personalized_coaching_plan_task
+    - progress_tracking_setup_task
+  process: sequential
+  verbose: true
+  memory: true
+  planning: true
+  description: >
+    Analyzes historical meeting data to provide long-term coaching insights
+    and personalized improvement recommendations.
+
+# Configuration settings for each crew type
+crew_settings:
+  real_time:
+    max_execution_time: 10 # seconds
+    priority: "speed"
+    retry_attempts: 1
+    chunk_size: 15 # seconds
+
+  post_meeting:
+    max_execution_time: 300 # seconds (5 minutes)
+    priority: "thoroughness"
+    retry_attempts: 2
+    analysis_depth: "comprehensive"
+
+  insights:
+    max_execution_time: 180 # seconds (3 minutes)
+    priority: "accuracy"
+    retry_attempts: 2
+    historical_data_range: "6_months" # How far back to analyze
+
+# Output configurations
+output_settings:
+  real_time:
+    format: "json"
+    max_nudge_length: 10 # words
+    confidence_threshold: 0.7
+
+  post_meeting:
+    format: "markdown"
+    include_charts: true
+    detailed_analysis: true
+
+  insights:
+    format: "json"
+    include_tracking_dashboard: true
+    goal_setting: true

@@ -1,3 +1,396 @@
+# Real-time Analysis Tasks
+real_time_audio_analysis_task:
+  description: >
+    Analyze a 15-second audio segment from meeting chunk: {chunk_file_path}
+
+    Your analysis must include:
+    1. Speech pace calculation (words per minute)
+    2. Filler word detection and count ("um", "uh", "like", "so", "you know")
+    3. Volume consistency analysis
+    4. Vocal tone and energy assessment
+    5. Clarity and articulation evaluation
+
+    Process the audio file and provide quantitative metrics with specific 
+    recommendations for immediate improvement.
+  expected_output: >
+    A structured JSON object containing:
+    {
+      "pace_wpm": integer,
+      "filler_count": integer,
+      "volume_consistency": "stable|fluctuating|low|high",
+      "vocal_energy": "low|moderate|high|excessive",
+      "clarity_score": float (0-1),
+      "immediate_audio_feedback": "string with specific actionable advice",
+      "priority_level": "low|medium|high|critical"
+    }
+  agent: real_time_audio_analyst
+  async_execution: true
+  max_retry: 2
+  context: []
+
+real_time_video_analysis_task:
+  description: >
+    Analyze a 15-second video segment from meeting chunk: {chunk_file_path}
+
+    Your analysis must evaluate:
+    1. Facial expression patterns and emotional consistency
+    2. Eye contact frequency and direction
+    3. Head movement and positioning
+    4. Hand gestures and body positioning
+    5. Overall visual engagement level
+    6. Background and lighting assessment
+
+    Focus on identifying immediate visual adjustments that can enhance 
+    communication effectiveness.
+  expected_output: >
+    A structured JSON object containing:
+    {
+      "eye_contact_percentage": float (0-100),
+      "dominant_emotion": "neutral|happy|concerned|frustrated|engaged|distracted",
+      "gesture_appropriateness": "minimal|appropriate|excessive|distracting",
+      "posture_assessment": "professional|slouched|rigid|natural",
+      "visual_engagement_score": float (0-1),
+      "immediate_visual_feedback": "string with specific actionable advice",
+      "priority_level": "low|medium|high|critical"
+    }
+  agent: real_time_video_analyst
+  async_execution: true
+  max_retry: 2
+  context: []
+
+synthesize_real_time_feedback_task:
+  description: >
+    Combine audio and video analysis results to generate the single most 
+    important feedback nudge for immediate implementation.
+
+    Prioritization rules:
+    1. Critical issues (affecting comprehension) take precedence
+    2. High-impact, easy-to-fix issues come next
+    3. Consider user's current stress level and meeting context
+    4. Ensure feedback is implementable within 5 seconds
+
+    Generate ONE primary nudge with clear, brief instruction.
+  expected_output: >
+    A final JSON object for the UI:
+    {
+      "primary_nudge": "pace_down|speak_up|eye_contact|reduce_fillers|improve_posture|none",
+      "nudge_message": "Brief, actionable instruction (max 10 words)",
+      "reasoning": "Explanation of why this nudge was prioritized",
+      "confidence_score": float (0-1),
+      "next_check_priority": "audio|video|both"
+    }
+  agent: real_time_feedback_synthesizer
+  context: [real_time_audio_analysis_task, real_time_video_analysis_task]
+  async_execution: false
+  max_retry: 1
+
+# Post-meeting Analysis Tasks
+comprehensive_transcription_task:
+  description: >
+    Generate a complete, accurate transcription of the full meeting recording: {meeting_video_path}
+
+    Requirements:
+    1. Identify and label all speakers (Speaker A, Speaker B, etc.)
+    2. Include accurate timestamps every 30 seconds
+    3. Categorize content into: agenda items, decisions, action items, discussions
+    4. Note any technical issues or audio quality problems
+    5. Identify key moments and topic transitions
+
+    Ensure the transcription serves as a reliable foundation for detailed analysis.
+  expected_output: >
+    A comprehensive text file containing:
+    - Complete verbatim transcription with speaker labels
+    - Timestamp markers every 30 seconds
+    - Section headers for major topics discussed
+    - Identified action items and decisions
+    - Notes on audio quality or technical issues
+    - Word count and estimated speaking time per participant
+  agent: meeting_transcription_specialist
+  async_execution: false
+  max_retry: 2
+  output_file: "transcription_{meeting_id}.txt"
+
+communication_patterns_analysis_task:
+  description: >
+    Analyze the complete meeting transcription to identify communication patterns 
+    and behavioral dynamics.
+
+    Analysis requirements:
+    1. Calculate speaking time and turn distribution for each participant
+    2. Identify interruption patterns and their impact
+    3. Analyze question-asking patterns and response behaviors
+    4. Evaluate meeting flow and topic transition effectiveness
+    5. Assess participation equity and inclusion indicators
+    6. Identify dominant communication styles present
+
+    Focus on patterns that impact meeting effectiveness and team dynamics.
+  expected_output: >
+    A detailed JSON analysis report containing:
+    {
+      "participation_metrics": {
+        "speaker_time_distribution": {},
+        "turn_taking_frequency": {},
+        "interruption_analysis": {}
+      },
+      "communication_styles": {
+        "dominant_styles": [],
+        "style_compatibility": {}
+      },
+      "meeting_flow_analysis": {
+        "topic_transitions": [],
+        "decision_making_patterns": [],
+        "question_response_dynamics": {}
+      },
+      "recommendations": []
+    }
+  agent: communication_pattern_analyst
+  context: [comprehensive_transcription_task]
+  async_execution: true
+  max_retry: 2
+
+sentiment_engagement_analysis_task:
+  description: >
+    Conduct comprehensive sentiment and engagement analysis of the meeting content.
+
+    Analysis scope:
+    1. Overall meeting sentiment progression
+    2. Individual participant sentiment patterns
+    3. Emotional peaks and valleys during discussions
+    4. Engagement level indicators throughout the meeting
+    5. Correlation between sentiment and participation
+    6. Impact of sentiment on decision-making moments
+
+    Identify emotional dynamics that influenced meeting outcomes.
+  expected_output: >
+    A comprehensive sentiment analysis report in JSON format:
+    {
+      "overall_sentiment": {
+        "meeting_sentiment_score": float,
+        "sentiment_progression": [],
+        "emotional_peaks": []
+      },
+      "participant_sentiment": {},
+      "engagement_analysis": {
+        "high_engagement_moments": [],
+        "low_engagement_periods": [],
+        "engagement_drivers": []
+      },
+      "sentiment_impact": {
+        "decision_making_correlation": {},
+        "participation_correlation": {},
+        "outcome_influence": []
+      }
+    }
+  agent: sentiment_engagement_analyst
+  context: [comprehensive_transcription_task]
+  async_execution: true
+  max_retry: 2
+
+body_language_comprehensive_analysis_task:
+  description: >
+    Conduct detailed analysis of non-verbal communication patterns throughout 
+    the entire meeting video: {meeting_video_path}
+
+    Analysis requirements:
+    1. Facial expression patterns for each participant
+    2. Body language and posture changes during key moments
+    3. Eye contact patterns and their correlation with speaking
+    4. Gesture usage and effectiveness
+    5. Signs of agreement, disagreement, or confusion
+    6. Engagement indicators and attention patterns
+
+    Correlate non-verbal cues with verbal content and meeting outcomes.
+  expected_output: >
+    A comprehensive non-verbal analysis report:
+    {
+      "individual_analysis": {
+        "participant_profiles": {},
+        "expression_patterns": {},
+        "posture_analysis": {}
+      },
+      "interaction_dynamics": {
+        "eye_contact_patterns": {},
+        "gesture_effectiveness": {},
+        "agreement_indicators": []
+      },
+      "meeting_moments": {
+        "high_engagement_visual_cues": [],
+        "confusion_indicators": [],
+        "decision_moment_body_language": []
+      },
+      "recommendations": []
+    }
+  agent: body_language_expert
+  context: [comprehensive_transcription_task]
+  async_execution: true
+  max_retry: 3
+
+generate_comprehensive_meeting_report_task:
+  description: >
+    Create a comprehensive meeting analysis report that synthesizes all analysis 
+    data into actionable insights and recommendations.
+
+    Report sections:
+    1. Executive Summary of meeting effectiveness
+    2. Individual participant performance analysis
+    3. Team communication dynamics assessment
+    4. Key strengths and improvement opportunities
+    5. Specific coaching recommendations for each participant
+    6. Team-level recommendations for future meetings
+    7. Follow-up action items and tracking metrics
+
+    Ensure recommendations are specific, actionable, and prioritized.
+  expected_output: >
+    A comprehensive meeting report in markdown format containing:
+    - Executive summary with key metrics and overall assessment
+    - Individual participant scorecards with specific feedback
+    - Team dynamics analysis with interaction patterns
+    - Prioritized improvement recommendations
+    - Suggested coaching focus areas
+    - Measurable goals for improvement
+    - Template for follow-up analysis
+  agent: meeting_report_generator
+  context:
+    [
+      communication_patterns_analysis_task,
+      sentiment_engagement_analysis_task,
+      body_language_comprehensive_analysis_task,
+    ]
+  async_execution: false
+  max_retry: 2
+  output_file: "meeting_report_{meeting_id}.md"
+
+# Meeting Insights Tasks
+historical_pattern_analysis_task:
+  description: >
+    Analyze all available historical meeting data for user: {user_id} to identify 
+    long-term communication patterns and trends.
+
+    Analysis scope:
+    1. Communication skill progression over time
+    2. Recurring challenges and improvement areas
+    3. Successful intervention impacts
+    4. Context-specific performance patterns (meeting types, team compositions)
+    5. Seasonal or situational communication variations
+    6. Correlation between feedback implementation and improvement
+
+    Provide insights that inform long-term coaching strategy.
+  expected_output: >
+    A comprehensive historical analysis report:
+    {
+      "user_profile": {
+        "communication_strengths": [],
+        "persistent_challenges": [],
+        "improvement_trajectory": {}
+      },
+      "pattern_analysis": {
+        "recurring_themes": [],
+        "context_performance": {},
+        "intervention_effectiveness": {}
+      },
+      "trend_insights": {
+        "skill_progression": {},
+        "consistency_metrics": {},
+        "growth_opportunities": []
+      }
+    }
+  agent: historical_data_analyst
+  async_execution: true
+  max_retry: 2
+
+personalized_coaching_plan_task:
+  description: >
+    Generate a comprehensive, personalized coaching plan based on historical 
+    analysis and current performance data.
+
+    Plan components:
+    1. Priority improvement areas with specific focus
+    2. Customized practice exercises and techniques
+    3. Measurable goals with timeline expectations
+    4. Recommended resources and learning materials
+    5. Progress tracking milestones
+    6. Integration strategies for daily work context
+
+    Ensure recommendations are actionable and aligned with professional goals.
+  expected_output: >
+    A detailed coaching plan in structured format:
+    {
+      "coaching_overview": {
+        "primary_focus_areas": [],
+        "coaching_philosophy": "string",
+        "estimated_timeline": "string"
+      },
+      "improvement_modules": [
+        {
+          "skill_area": "string",
+          "current_level": "string",
+          "target_level": "string",
+          "specific_exercises": [],
+          "practice_schedule": "string",
+          "measurement_criteria": []
+        }
+      ],
+      "resources": {
+        "recommended_reading": [],
+        "practice_tools": [],
+        "video_tutorials": []
+      },
+      "progress_tracking": {
+        "weekly_goals": [],
+        "monthly_milestones": [],
+        "quarterly_assessments": []
+      }
+    }
+  agent: coaching_recommendation_specialist
+  context: [historical_pattern_analysis_task]
+  async_execution: false
+  max_retry: 2
+
+progress_tracking_setup_task:
+  description: >
+    Establish comprehensive progress tracking system and generate current 
+    progress report based on recent meeting analyses.
+
+    Tracking system components:
+    1. Key performance indicators (KPIs) for communication skills
+    2. Baseline measurements and improvement benchmarks
+    3. Progress visualization recommendations
+    4. Automated tracking suggestions
+    5. Milestone celebration triggers
+    6. Course correction indicators
+
+    Create a system that motivates continued improvement.
+  expected_output: >
+    A progress tracking framework:
+    {
+      "tracking_framework": {
+        "core_metrics": [],
+        "measurement_frequency": {},
+        "improvement_benchmarks": {}
+      },
+      "current_status": {
+        "skill_scores": {},
+        "recent_improvements": [],
+        "areas_needing_attention": []
+      },
+      "tracking_recommendations": {
+        "dashboard_elements": [],
+        "notification_triggers": [],
+        "celebration_milestones": []
+      },
+      "next_steps": {
+        "immediate_actions": [],
+        "short_term_goals": [],
+        "long_term_objectives": []
+      }
+    }
+  agent: progress_tracking_specialist
+  context: [historical_pattern_analysis_task, personalized_coaching_plan_task]
+  async_execution: false
+  max_retry: 2
+  output_file: "progress_tracking_{user_id}.json"
+
+# Legacy tasks for compatibility
 research_task:
   description: >
     Conduct a thorough research about {topic}
