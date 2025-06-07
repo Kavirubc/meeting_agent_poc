@@ -42,3 +42,4 @@ openai>=1.66.0
 azure-cognitiveservices-speech
 google-cloud-speech
 google-cloud-storage
+google-generativeai>=0.8.0
