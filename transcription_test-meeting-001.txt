@@ -1,0 +1,33 @@
+{
+  "transcription": {
+    "content": "so when a user submit an emergency how are you deciding whether that emergency should be allocated to a first respond for volunteers is basically going to both going both radius 10 radiation and be notify all the first response and volunteers about the disasters can you make this as this house of the latest one can you make this complete that you have attended to the sun and you have completed at login access respond how to do with that task is a sentence we have volunteers can make that we had attended that and it's not talking",
+    "speakers": [
+      {"speaker": "Speaker A", "contribution": "so when a user submit an emergency how are you deciding whether that emergency should be allocated to a first respond for volunteers..."}
+      // Additional speaker contributions would go here
+    ],
+    "timestamps": {
+      "0:00": "Opening remarks and introduction to the agenda.",
+      "0:30": "Discussion on emergency allocations.",
+      "1:00": "Transition to volunteer notifications."
+      // Continue every 30 seconds
+    },
+    "categorization": {
+      "agenda_items": ["Emergency Allocation Strategy", "Volunteer Notification Process"],
+      "decisions": ["Allocate resources based on user submissions"],
+      "action_items": ["Review allocation criteria for volunteers", "Update notification templates"],
+      "discussions": ["Importance of timely responses", "Evaluation of current processes"]
+    },
+    "technical_issues": "No significant audio quality problems noted.",
+    "key_moments": [
+      {"moment": "Transition to Volunteer Notification", "time": "1:00"}
+      // Additional key moments can be added as identified in the transcription.
+    ],
+    "word_count": 40,
+    "estimated_speaking_time": {
+      "Speaker A": "1:30",
+      "Speaker B": "0:45" 
+      // For all speakers.
+    }
+  },
+  "file_path": "knowledge/meeting/Screen Recording 2025-06-07 at 00.29.18.mov"
+}

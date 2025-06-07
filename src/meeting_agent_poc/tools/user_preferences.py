@@ -39,6 +39,8 @@ class PriorityArea(Enum):
     INTERRUPTIONS = "interruptions"
     CLARITY = "clarity"
     SENTIMENT = "sentiment"
+    BODY_LANGUAGE = "body_language"
+    VISUAL_ENGAGEMENT = "visual_engagement"
 
 
 @dataclass
@@ -306,19 +308,29 @@ def apply_speech_preferences(results: Dict[str, Any], preferences: UserPreferenc
     pace_wpm = results.get("pace_wpm", 0)
     pace_thresholds = preferences.pace_thresholds
     
-    if pace_wpm < pace_thresholds["critical_min"] or pace_wpm > pace_thresholds["critical_max"]:
-        results["priority_level"] = "critical"
-    elif pace_wpm < pace_thresholds["min_wpm"] or pace_wpm > pace_thresholds["max_wpm"]:
-        results["priority_level"] = "high"
+    # Check for critical pace thresholds (optional)
+    if "critical_min" in pace_thresholds and "critical_max" in pace_thresholds:
+        if pace_wpm < pace_thresholds["critical_min"] or pace_wpm > pace_thresholds["critical_max"]:
+            results["priority_level"] = "critical"
+    
+    # Check for standard pace thresholds
+    if pace_wpm < pace_thresholds.get("min_wpm", 100) or pace_wpm > pace_thresholds.get("max_wpm", 200):
+        if results.get("priority_level") != "critical":
+            results["priority_level"] = "high"
     
     # Adjust filler word feedback
     filler_count = results.get("filler_count", 0)
     filler_thresholds = preferences.filler_thresholds
     
-    if filler_count >= filler_thresholds["critical"]:
-        results["priority_level"] = max(results.get("priority_level", "low"), "critical", key=lambda x: ["low", "medium", "high", "critical"].index(x))
-    elif filler_count >= filler_thresholds["high"]:
-        results["priority_level"] = max(results.get("priority_level", "low"), "high", key=lambda x: ["low", "medium", "high", "critical"].index(x))
+    if filler_count >= filler_thresholds.get("critical", 10):
+        current_priority = results.get("priority_level", "low")
+        if current_priority != "critical":
+            results["priority_level"] = "critical"
+    elif filler_count >= filler_thresholds.get("high", 6):
+        current_priority = results.get("priority_level", "low")
+        priority_order = ["low", "medium", "high", "critical"]
+        if priority_order.index(current_priority) < priority_order.index("high"):
+            results["priority_level"] = "high"
     
     # Customize feedback based on priority areas
     if PriorityArea.SPEECH_PACE not in preferences.priority_areas:
@@ -351,6 +363,108 @@ def apply_visual_preferences(results: Dict[str, Any], preferences: UserPreferenc
     
     if not preferences.include_body_language:
         # Skip detailed body language analysis
+        results["simplified_analysis"] = True
+    
+    return results
+
+
+def apply_body_language_preferences(results: Dict[str, Any], preferences: UserPreferences) -> Dict[str, Any]:
+    """Apply user preferences to body language analysis results"""
+    
+    if not preferences:
+        return results
+    
+    # Apply sensitivity adjustments for body language
+    if preferences.feedback_sensitivity == FeedbackSensitivity.LOW:
+        # Only flag serious body language issues
+        if results.get("posture_assessment") not in ["poor", "very poor"]:
+            results["priority_level"] = "low"
+        if results.get("gesture_frequency", 1.0) < 0.1 or results.get("gesture_frequency", 1.0) > 5.0:
+            results["gesture_feedback_threshold"] = 0.7
+    
+    elif preferences.feedback_sensitivity == FeedbackSensitivity.HIGH:
+        # Be more sensitive to body language issues
+        if results.get("posture_assessment") == "fair":
+            results["posture_needs_attention"] = True
+        if results.get("movement_consistency", 0.5) < 0.6:
+            results["consistency_flag"] = True
+    
+    # Apply priority area preferences
+    if PriorityArea.POSTURE in preferences.priority_areas:
+        posture_score = results.get("posture_score", 0.5)
+        if posture_score < 0.6:
+            results["posture_priority_boost"] = True
+    
+    if PriorityArea.GESTURES in preferences.priority_areas:
+        gesture_freq = results.get("gesture_frequency", 1.0)
+        if gesture_freq < 0.5 or gesture_freq > 3.0:
+            results["gesture_priority_boost"] = True
+    
+    # Apply thresholds based on coaching goals
+    if "professional_presence" in preferences.coaching_goals:
+        # Higher standards for professional settings
+        results["professional_standards"] = True
+        if results.get("overall_body_language_score", 0.5) < 0.7:
+            results["professionalism_flag"] = True
+    
+    if "confidence_building" in preferences.coaching_goals:
+        # Focus on posture and gesture confidence
+        if results.get("posture_stability", 0.5) < 0.5:
+            results["confidence_posture_flag"] = True
+    
+    # Disable body language analysis if not included in preferences
+    if not preferences.include_body_language:
+        # Skip detailed body language analysis
+        results["simplified_analysis"] = True
+    
+    return results
+
+
+def apply_visual_preferences(results: Dict[str, Any], preferences: UserPreferences) -> Dict[str, Any]:
+    """Apply user preferences to visual analysis results"""
+    
+    if not preferences:
+        return results
+    
+    # Apply sensitivity adjustments for visual analysis
+    if preferences.feedback_sensitivity == FeedbackSensitivity.LOW:
+        # Only flag serious visual issues
+        eye_contact_pct = results.get("eye_contact_percentage", 50)
+        if eye_contact_pct > 30:  # Lower threshold for low sensitivity
+            results["eye_contact_priority"] = "low"
+    
+    elif preferences.feedback_sensitivity == FeedbackSensitivity.HIGH:
+        # Be more sensitive to visual issues
+        eye_contact_pct = results.get("eye_contact_percentage", 50)
+        if eye_contact_pct < 60:  # Higher threshold for high sensitivity
+            results["eye_contact_needs_attention"] = True
+        
+        engagement_score = results.get("visual_engagement_score", 0.5)
+        if engagement_score < 0.7:
+            results["engagement_flag"] = True
+    
+    # Apply priority area preferences
+    if PriorityArea.EYE_CONTACT in preferences.priority_areas:
+        eye_contact_pct = results.get("eye_contact_percentage", 50) / 100
+        if eye_contact_pct < preferences.eye_contact_thresholds["minimum"]:
+            results["eye_contact_priority_boost"] = True
+    
+    # Apply thresholds based on eye contact preferences
+    eye_contact_pct = results.get("eye_contact_percentage", 50) / 100
+    if eye_contact_pct < preferences.eye_contact_thresholds.get("minimum", 0.3):
+        results["below_minimum_eye_contact"] = True
+    elif eye_contact_pct > preferences.eye_contact_thresholds.get("excellent", 0.7):
+        results["excellent_eye_contact"] = True
+    
+    # Apply coaching goals
+    if "engagement_improvement" in preferences.coaching_goals:
+        engagement_score = results.get("visual_engagement_score", 0.5)
+        if engagement_score < 0.6:
+            results["engagement_improvement_flag"] = True
+    
+    # Apply detailed analysis preferences
+    if not preferences.detailed_analysis:
+        # Skip detailed visual analysis for simplified feedback
         results["simplified_analysis"] = True
     
     return results

@@ -3,6 +3,7 @@ from .custom_tool import (
     SpeechAnalyticsTool,
     VideoFacialAnalysisTool,
     BodyLanguageAnalysisTool,
+    EnhancedFeedbackSynthesizerTool,
     MyCustomTool
 )
 
@@ -11,5 +12,6 @@ __all__ = [
     "SpeechAnalyticsTool", 
     "VideoFacialAnalysisTool",
     "BodyLanguageAnalysisTool",
+    "EnhancedFeedbackSynthesizerTool",
     "MyCustomTool"
 ]

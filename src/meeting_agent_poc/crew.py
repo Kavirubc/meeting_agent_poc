@@ -4,7 +4,8 @@ from crewai.agents.agent_builder.base_agent import BaseAgent
 from typing import List
 import os
 from dotenv import load_dotenv
-from .tools import AudioTranscriptionTool, SpeechAnalyticsTool, VideoFacialAnalysisTool, BodyLanguageAnalysisTool
+from .tools import AudioTranscriptionTool, SpeechAnalyticsTool, VideoFacialAnalysisTool, BodyLanguageAnalysisTool, EnhancedFeedbackSynthesizerTool
+from .tools.user_preferences import UserPreferencesTool
 from .agentops_config import (
     initialize_agentops, 
     start_session, 
@@ -40,7 +41,7 @@ class MeetingAgentPoc():
     def real_time_audio_analyst(self) -> Agent:
         return Agent(
             config=self.agents_config['real_time_audio_analyst'],
-            tools=[AudioTranscriptionTool(), SpeechAnalyticsTool()],
+            tools=[AudioTranscriptionTool(), SpeechAnalyticsTool(), UserPreferencesTool()],
             verbose=True
         )
 
@@ -48,7 +49,7 @@ class MeetingAgentPoc():
     def real_time_video_analyst(self) -> Agent:
         return Agent(
             config=self.agents_config['real_time_video_analyst'],
-            tools=[VideoFacialAnalysisTool(), BodyLanguageAnalysisTool()],
+            tools=[VideoFacialAnalysisTool(), BodyLanguageAnalysisTool(), UserPreferencesTool()],
             verbose=True
         )
 
@@ -56,6 +57,7 @@ class MeetingAgentPoc():
     def real_time_feedback_synthesizer(self) -> Agent:
         return Agent(
             config=self.agents_config['real_time_feedback_synthesizer'],
+            tools=[EnhancedFeedbackSynthesizerTool(), UserPreferencesTool()],
             verbose=True
         )
 
@@ -309,11 +311,12 @@ class MeetingAgentPoc():
             track_crew_completion("real-time", False, error=str(e))
             raise e
 
-    def process_full_meeting(self, meeting_video_path: str, meeting_id: str):
+    def process_full_meeting(self, meeting_video_path: str, meeting_id: str, user_id: str = None):
         """Process complete meeting for comprehensive analysis"""
         inputs = {
             "meeting_video_path": meeting_video_path,
-            "meeting_id": meeting_id
+            "meeting_id": meeting_id,
+            "user_id": user_id or "default_user"
         }
         
         # Track crew execution start

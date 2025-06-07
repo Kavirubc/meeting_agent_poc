@@ -69,23 +69,28 @@ def run_real_time_analysis(chunk_file_path: str):
         end_session("Bad", f"Real-time analysis failed: {str(e)}")
         raise Exception(f"An error occurred during real-time analysis: {e}")
 
-def run_post_meeting_analysis(meeting_video_path: str, meeting_id: str):
+def run_post_meeting_analysis(meeting_video_path: str, meeting_id: str, user_id: str = None):
     """
     Run the post-meeting analysis crew on a full meeting recording.
     
     Args:
         meeting_video_path (str): Path to the full meeting video file
         meeting_id (str): Unique identifier for the meeting
+        user_id (str, optional): User identifier for personalized analysis
     """
     if not Path(meeting_video_path).exists():
         raise FileNotFoundError(f"Meeting video file not found: {meeting_video_path}")
+    
+    # Use default user_id if not provided
+    if not user_id:
+        user_id = "default_user"
     
     # Start AgentOps session
     session_id = start_session(f"Post-meeting Analysis - {meeting_id}")
     
     try:
         meeting_coach = MeetingAgentPoc()
-        result = meeting_coach.process_full_meeting(meeting_video_path, meeting_id)
+        result = meeting_coach.process_full_meeting(meeting_video_path, meeting_id, user_id)
         print(f"Post-meeting analysis complete. Report saved. Result: {result}")
         
         # End session with success
@@ -225,7 +230,7 @@ def main():
         elif args.command == "post-meeting":
             if not args.meeting_video or not args.meeting_id:
                 raise ValueError("--meeting-video and --meeting-id are required for post-meeting analysis")
-            run_post_meeting_analysis(args.meeting_video, args.meeting_id)
+            run_post_meeting_analysis(args.meeting_video, args.meeting_id, args.user_id)
         elif args.command == "insights":
             if not args.user_id:
                 raise ValueError("--user-id is required for coaching insights")

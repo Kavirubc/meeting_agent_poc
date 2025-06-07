@@ -3,25 +3,40 @@ real_time_audio_analysis_task:
   description: >
     Analyze a 15-second audio segment from meeting chunk: {chunk_file_path}
 
+    User Context: Consider user {user_id} preferences for personalized feedback.
+    Load user preferences to understand:
+    - Feedback sensitivity level (low/medium/high)
+    - Priority areas for improvement
+    - Speech pace thresholds and preferences
+    - Coaching goals and objectives
+
     Your analysis must include:
-    1. Speech pace calculation (words per minute)
+    1. Speech pace calculation (words per minute) with user-specific thresholds
     2. Filler word detection and count ("um", "uh", "like", "so", "you know")
     3. Volume consistency analysis
     4. Vocal tone and energy assessment
     5. Clarity and articulation evaluation
+    6. Enhanced speech analytics (variability, pause patterns, confidence)
 
     Process the audio file and provide quantitative metrics with specific 
-    recommendations for immediate improvement.
+    recommendations for immediate improvement, prioritized by user preferences.
   expected_output: >
     A structured JSON object containing:
     {
       "pace_wpm": integer,
       "filler_count": integer,
+      "filler_density": float,
       "volume_consistency": "stable|fluctuating|low|high",
-      "vocal_energy": "low|moderate|high|excessive",
-      "clarity_score": float (0-1),
+      "vocal_energy": "low|moderate|high|excessive", 
+      "clarity_score": object with score and factors,
+      "speaking_confidence": float (0-1),
+      "speech_variability": object with pitch and tempo data,
+      "pause_patterns": object with pause analysis,
+      "vocal_stress_indicators": object with stress analysis,
       "immediate_audio_feedback": "string with specific actionable advice",
-      "priority_level": "low|medium|high|critical"
+      "priority_level": "low|medium|high|critical",
+      "actionable_suggestions": array of specific improvement suggestions,
+      "user_preference_applied": boolean
     }
   agent: real_time_audio_analyst
   async_execution: true
@@ -32,23 +47,32 @@ real_time_video_analysis_task:
   description: >
     Analyze a 15-second video segment from meeting chunk: {chunk_file_path}
 
+    User Context: Consider user {user_id} preferences for personalized visual feedback.
+    Load user preferences to understand:
+    - Visual feedback sensitivity and priorities
+    - Eye contact preferences and thresholds
+    - Focus areas (engagement, expressiveness, etc.)
+    - Professional presence goals
+
     Your analysis must evaluate:
-    1. Facial expression patterns and emotional consistency
-    2. Eye contact frequency and direction
-    3. Head movement and positioning
-    4. Hand gestures and body positioning
-    5. Overall visual engagement level
-    6. Background and lighting assessment
+    1. Enhanced facial expression patterns and emotional consistency
+    2. Eye contact frequency, duration, and camera alignment
+    3. Head movement, positioning, and stability
+    4. Facial engagement and activity levels
+    5. Overall visual engagement score with multiple factors
+    6. Visual communication effectiveness indicators
 
     Focus on identifying immediate visual adjustments that can enhance 
-    communication effectiveness.
+    communication effectiveness based on user preferences.
   expected_output: >
     A structured JSON object containing:
     {
       "eye_contact_percentage": float (0-100),
-      "dominant_emotion": "neutral|happy|concerned|frustrated|engaged|distracted",
-      "gesture_appropriateness": "minimal|appropriate|excessive|distracting",
-      "posture_assessment": "professional|slouched|rigid|natural",
+      "dominant_emotion": "neutral|happy|concerned|frustrated|engaged|distracted|focused|tired",
+      "emotion_distribution": object with emotion percentages,
+      "visual_engagement_score": float (0-1),
+      "facial_activity_score": float (0-1),
+      "head_movement_analysis": object with movement patterns,
       "visual_engagement_score": float (0-1),
       "immediate_visual_feedback": "string with specific actionable advice",
       "priority_level": "low|medium|high|critical"
@@ -60,24 +84,34 @@ real_time_video_analysis_task:
 
 synthesize_real_time_feedback_task:
   description: >
-    Combine audio and video analysis results to generate the single most 
+    Combine audio, video, and body language analysis results to generate the single most 
     important feedback nudge for immediate implementation.
+
+    User Context: Apply user {user_id} preferences for personalized feedback synthesis.
+    Load user preferences to understand:
+    - Feedback sensitivity and preferred nudge frequency
+    - Priority areas that need immediate focus
+    - Coaching goals and preferred communication style
+    - Threshold preferences for different types of feedback
 
     Prioritization rules:
     1. Critical issues (affecting comprehension) take precedence
-    2. High-impact, easy-to-fix issues come next
-    3. Consider user's current stress level and meeting context
+    2. High-impact, easy-to-fix issues aligned with user preferences come next
+    3. Consider user's current stress level, coaching goals, and meeting context
     4. Ensure feedback is implementable within 5 seconds
+    5. Apply user-specific priority weighting to different feedback types
 
-    Generate ONE primary nudge with clear, brief instruction.
+    Generate ONE primary nudge with clear, brief instruction that aligns with user preferences.
   expected_output: >
     A final JSON object for the UI:
     {
-      "primary_nudge": "pace_down|speak_up|eye_contact|reduce_fillers|improve_posture|none",
+      "primary_nudge": "pace_down|speak_up|eye_contact|reduce_fillers|improve_posture|adjust_body_language|none",
       "nudge_message": "Brief, actionable instruction (max 10 words)",
       "reasoning": "Explanation of why this nudge was prioritized",
       "confidence_score": float (0-1),
-      "next_check_priority": "audio|video|both"
+      "user_preference_alignment": boolean,
+      "priority_area_matched": "string describing which user priority was addressed",
+      "next_check_priority": "audio|video|body_language|all"
     }
   agent: real_time_feedback_synthesizer
   context: [real_time_audio_analysis_task, real_time_video_analysis_task]
@@ -213,32 +247,50 @@ body_language_comprehensive_analysis_task:
     Conduct detailed analysis of non-verbal communication patterns throughout 
     the entire meeting video: {meeting_video_path}
 
-    Analysis requirements:
-    1. Facial expression patterns for each participant
-    2. Body language and posture changes during key moments
-    3. Eye contact patterns and their correlation with speaking
-    4. Gesture usage and effectiveness
-    5. Signs of agreement, disagreement, or confusion
-    6. Engagement indicators and attention patterns
+    User Context: Consider user {user_id} preferences for personalized body language feedback.
+    Load user preferences to understand:
+    - Body language feedback sensitivity (low/medium/high)
+    - Priority areas (posture, gestures, engagement, professional presence)
+    - Specific coaching goals and objectives
+    - Visual feedback preferences and thresholds
 
-    Correlate non-verbal cues with verbal content and meeting outcomes.
+    Analysis requirements:
+    1. Facial expression patterns for each participant with emotion distribution
+    2. Body language and posture changes during key moments
+    3. Eye contact patterns and their correlation with speaking effectiveness
+    4. Gesture usage, variety, and communication effectiveness
+    5. Signs of agreement, disagreement, or confusion with confidence scoring
+    6. Engagement indicators and attention patterns throughout meeting
+    7. Enhanced posture analysis with stability and consistency metrics
+    8. Movement patterns and their impact on communication effectiveness
+
+    Correlate non-verbal cues with verbal content, meeting outcomes, and user preferences.
   expected_output: >
     A comprehensive non-verbal analysis report:
     {
       "individual_analysis": {
         "participant_profiles": {},
         "expression_patterns": {},
-        "posture_analysis": {}
+        "posture_analysis": {},
+        "gesture_analysis": {},
+        "engagement_scores": {}
       },
       "interaction_dynamics": {
         "eye_contact_patterns": {},
         "gesture_effectiveness": {},
-        "agreement_indicators": []
+        "agreement_indicators": [],
+        "communication_coordination": {}
       },
       "meeting_moments": {
         "high_engagement_visual_cues": [],
         "confusion_indicators": [],
-        "decision_moment_body_language": []
+        "decision_moment_body_language": [],
+        "attention_patterns": []
+      },
+      "user_preference_analysis": {
+        "priority_feedback": [],
+        "personalized_insights": [],
+        "coaching_alignment": {}
       },
       "recommendations": []
     }
@@ -252,25 +304,33 @@ generate_comprehensive_meeting_report_task:
     Create a comprehensive meeting analysis report that synthesizes all analysis 
     data into actionable insights and recommendations.
 
-    Report sections:
-    1. Executive Summary of meeting effectiveness
-    2. Individual participant performance analysis
-    3. Team communication dynamics assessment
-    4. Key strengths and improvement opportunities
-    5. Specific coaching recommendations for each participant
-    6. Team-level recommendations for future meetings
-    7. Follow-up action items and tracking metrics
+    User Context: Consider user {user_id} preferences throughout the report generation.
+    Load user preferences to understand:
+    - Feedback sensitivity and preferred level of detail
+    - Priority areas for focused recommendations
+    - Coaching goals and professional development objectives
+    - Preferred feedback style and communication preferences
 
-    Ensure recommendations are specific, actionable, and prioritized.
+    Report sections:
+    1. Executive Summary of meeting effectiveness with user-specific insights
+    2. Individual participant performance analysis with personalized feedback
+    3. Team communication dynamics assessment
+    4. Key strengths and improvement opportunities aligned with user preferences
+    5. Specific coaching recommendations prioritized by user goals
+    6. Team-level recommendations for future meetings
+    7. Follow-up action items and tracking metrics tailored to user preferences
+
+    Ensure recommendations are specific, actionable, prioritized by user preferences, and aligned with coaching goals.
   expected_output: >
     A comprehensive meeting report in markdown format containing:
-    - Executive summary with key metrics and overall assessment
-    - Individual participant scorecards with specific feedback
-    - Team dynamics analysis with interaction patterns
-    - Prioritized improvement recommendations
-    - Suggested coaching focus areas
-    - Measurable goals for improvement
-    - Template for follow-up analysis
+    - Executive summary with key metrics, overall assessment, and user-specific insights
+    - Individual participant scorecards with personalized feedback aligned with preferences
+    - Team dynamics analysis with interaction patterns and coaching opportunities
+    - Prioritized improvement recommendations based on user goals and preferences
+    - Suggested coaching focus areas with timeline and measurement criteria
+    - Measurable goals for improvement with user preference integration
+    - Template for follow-up analysis and progress tracking
+    - Personalized action items prioritized by user coaching objectives
   agent: meeting_report_generator
   context:
     [
